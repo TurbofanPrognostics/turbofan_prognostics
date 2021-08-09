@@ -57,7 +57,7 @@ Project Organization
 # Run Jupyter Server on Docker
 1. Install Docker on your machine: [Get Docker](https://docs.docker.com/get-docker/])
 2. Build a docker image specified in this repo. First go to root of repo `/turbofan_prognostics` and run command: `docker build . -t turbofan1`. Replace `turbofan1` with any name of the image you would like.
-3. To run the jupyter server in Docker, run this command: `docker run -it -p 8888:8888 --volume "$HOME/git/turbofan_prognostics":"/home/jovyan/work" turbofan1`. Note `turbofan1` is the name of the docker image in step 2. The `--volume` flag allows to mount a local directory as the `/work` directory inside the docker container and allows you to modify notebooks inside the container but will persist after the container stops running.
+3. To run the jupyter server in Docker, run this command: `docker run -it -p 8888:8888 --volume "$HOME/git/turbofan_prognostics":"/home/jovyan/work" turbofan1`. Note `turbofan1` is the name of the docker image in step 2. The `--volume` flag allows to mount a local directory as the `/work` directory inside the docker container and allows you to persist changes to notebooks inside the container even after the container stops running.
 4. See more docker runtime options here: [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#docker-options)
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
