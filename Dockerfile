@@ -14,4 +14,4 @@ RUN pip install --quiet --no-cache-dir --requirement /tmp/requirements.txt && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
-COPY --chown=${NB_UID}:${NB_GID} . /work/turbofan_prognostics
+COPY --chown=${NB_UID}:${NB_GID} . /turbofan_prognostics
