@@ -7,7 +7,7 @@ _Report describing the final model to be delivered - typically comprised of one 
 * What are inputs (description) (&#x2714;)
 * What kind of model was built? (&#x2714;)
 
-The expected value to be gained from this project lies in effective predictive maintenance of turbofan engines. To explain the analytical approach taken, we  first describe the experimental scenario, as outlined in the NASA's turbofan engine degradation simulation dataset (CMAPSS). The project leverages four (4) multivariate time series (see the Data Schema section for details). FD001 has a single fault mode (HPC Degradation) with 100 vector valued training examples and 100 vector valued test examples. FD002 has single fault mode (HPC Degradation) with 260 training examples and 259 training examples.  FD003 is a more complicated dataset with the possibility of two (2) fault modes (HPC Degradation and or Fan Degradation). For FD003, we had 100 vector valued training examples and 100 vector valued test set examples.  Similar to FD003, FD004 also had two fault modes (HPC Degradation and Fan Degradation) with 248 training examples and 249 test examples. The table below provides a summary of the project training and testing datasets. 
+The expected value to be gained from this project lies in effective predictive maintenance of turbofan engines. To explain the analytical approach taken, we  first describe the experimental scenario, as outlined in the NASA's turbofan engine degradation simulation dataset (CMAPSS). The project leverages four (4) multivariate time series (see the Data Schema section for details). FD001 has a single fault mode (HPC Degradation) with 100 vector valued training examples and 100 vector valued test examples. FD002 has single fault mode (HPC Degradation) with 260 training examples and 259 training examples.  FD003 is a more complicated dataset with the possibility of two (2) fault modes (HPC Degradation and or Fan Degradation). For FD003, we had 100 vector valued training examples and 100 vector valued test set examples.  Similar to FD003, FD004 also had two fault modes (HPC Degradation and Fan Degradation) with 248 training examples and 249 test examples. The table below provides a summary of the project training and testing data sets. 
 
 | **Dataset**  | **Fault modes**                 |**Training set size** |**Test set size** |
 |--------------|---------------------------------|----------------------|------------------|
@@ -39,17 +39,54 @@ Based on a comparison of the RMSE score, the LSTM model is the best performing m
 * Simple solution architecture (Data sources, solution components, data flow)
 * What is output?
 
-## Data
-* Source
-* Data Schema
-* Sampling
-* Selection (dates, segments)
-* Stats (counts)
+## Data and Features
+* Source (&#x2714;)
+* Data Schema (&#x2714;)
+* Stats (counts) (&#x2714;)
 
+The reference for the data sets used in this project is Damage Propagation Modeling for Aircraft Engine Run-to-Failure Simulation published in the 1st International Conference on Prognostics and Health Management. The first use case for this data was to use expert knowledge, combined with the data sets to model damage propagation from which an overall health index can be derived. Thresholding on the health index can then be used to determine failure times.  For our purposes we take a data driven approach to directly predict the remaining useful life of the fleet engines.
 
-## Features
-* List of raw and derived features 
-* Importance ranking.
+Below is a Pydantic schema for the raw features used in the analysis.
+
+	unit_number: int
+	time: int
+	op_setting_1: float
+	op_setting_2: float
+	op_setting_3: float
+	sensor_1: float
+	sensor_2: float
+	sensor_3: float
+	sensor_4: float
+	sensor_5: float
+	sensor_6: float
+	sensor_7: float
+	sensor_8: float
+	sensor_9: float
+	sensor_10: float
+	sensor_11: float
+	sensor_12: float
+	sensor_13: float
+	sensor_14: float
+	sensor_15: float
+	sensor_16: float
+	sensor_17: float
+	sensor_18: float
+	sensor_19: float
+	sensor_20: float
+	sensor_21: float
+	sensor_22: Optional[float]
+	sensor_23: Optional[float]
+
+The unit_number feature is provided as an index used to identify a particular engine within the study. The time feature represents the number of operational cycles a particular engine has experienced. The three (3) op_setting features are used to determine the operational conditions under which the experiment is being performed. The twenty three (23) sensor features are time series of physical sensor measurements.
+
+The summary of the project training and testing data sets provides an overview of the count of units in a particular data set.  When considering each cycle for each unit as the exchangeable data element, the count of data examples within the project is provided below.
+
+| **Dataset**  |**Training set size**   |**Test set size** |
+|--------------|------------------------|------------------|
+|FD001         |20631                   |13096             |
+|FD002         |53759                   |33991             |
+|FD003         |24720                   |16596             |
+|FD004         |61249                   |41214             |
 
 ## Algorithm
 * Description or images of data flow graph
