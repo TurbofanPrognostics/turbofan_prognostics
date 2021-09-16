@@ -36,6 +36,9 @@ Based on a comparison of the RMSE score, the LSTM model is the best performing m
 ![Test sets RUL distribution](figures/rul_distribution.png "Test sets RUL distribution")
 
 ## Solution Description
+### System Architecture
+![Solution Diagram](figures/turbofan_prognostics_system_design_final.png "System Design Diagram")
+
 * Simple solution architecture (Data sources, solution components, data flow)
 * What is output?
 
