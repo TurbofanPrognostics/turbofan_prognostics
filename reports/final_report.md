@@ -95,6 +95,15 @@ The summary of the project training and testing data sets provides an overview o
 
 ![Data flow diagram for LSTM model](figures/Dataflow.png "Data flow diagram for LSTM model")
 
+The above figure is a stylized data flow diagram for the LSTM model.  In this report we will only present the data flow diagram for the LSTM model as it is the most accurate model, as well as, the most complex model of the three model under consideration. 
+
+**[Standard Scaling]** Without any preprocessing, the expected Xinput into the LSTM model is expected to be in the form identified by the Pydantic Schema. To prepare the input for model consumption, we first apply a standard scaling. Most of the inputs represents physical measurements, such as sensor temperature or pressure, there is no obvious reasons why a change in scale would impact model performance. As a consequence, we chose to leverage standard scaling to improve convergence stability in the deep neural network architecture.
+
+**[Exponential Smoothing]** The next step in the data flow preprocessing is the application of exponential smoothing to improve the signal to noise ratio of the model features.  Exponential smoothing is a widely used technique that acts as a low pass filter to remove high frequency noise.
+
+**[LSTM]** 
+
+
 ## Results
 * ROC/Lift charts, AUC, R^2, MAPE as appropriate
 * Performance graphs for parameters sweeps if applicable
