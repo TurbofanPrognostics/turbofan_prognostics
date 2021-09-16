@@ -79,7 +79,7 @@ Below is a Pydantic schema for the raw features used in the analysis.
 
 The unit_number feature is provided as an index used to identify a particular engine within the study. The time feature represents the number of operational cycles a particular engine has experienced. The three (3) op_setting features are used to determine the operational conditions under which the experiment is being performed. The twenty three (23) sensor features are time series of physical sensor measurements.
 
-The summary of the project training and testing data sets provides an overview of the count of units in a particular data set.  When considering each cycle for each unit as the exchangeable data element, the count of data examples within the project is provided below.
+The summary of the project training and testing data sets provides an overview of the count of units in a particular data set.  When considering each cycle for each unit as the exchangeable data element, the counts of data examples within the project are provided below.
 
 | **Dataset**  |**Training set size**   |**Test set size** |
 |--------------|------------------------|------------------|
@@ -92,6 +92,8 @@ The summary of the project training and testing data sets provides an overview o
 * Description or images of data flow graph
 * What learner(s) were used?
 * Learner hyper-parameters
+
+![Data flow diagram for LSTM model](figures/Dataflow.png "Data flow diagram for LSTM model")
 
 ## Results
 * ROC/Lift charts, AUC, R^2, MAPE as appropriate
