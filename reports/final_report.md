@@ -3,9 +3,6 @@
 _Report describing the final model to be delivered - typically comprised of one or more of the models built during the life of the project_
 
 ## Analytic Approach
-* What is target definition (&#x2714;)
-* What are inputs (description) (&#x2714;)
-* What kind of model was built? (&#x2714;)
 
 The expected value to be gained from this project lies in effective predictive maintenance of turbofan engines. To explain the analytical approach taken, we  first describe the experimental scenario, as outlined in the NASA's turbofan engine degradation simulation dataset (CMAPSS). The project leverages four (4) multivariate time series (see the Data Schema section for details). FD001 has a single fault mode (HPC Degradation) with 100 vector valued training examples and 100 vector valued test examples. FD002 has single fault mode (HPC Degradation) with 260 training examples and 259 training examples.  FD003 is a more complicated dataset with the possibility of two (2) fault modes (HPC Degradation and or Fan Degradation). For FD003, we had 100 vector valued training examples and 100 vector valued test set examples.  Similar to FD003, FD004 also had two fault modes (HPC Degradation and Fan Degradation) with 248 training examples and 249 test examples. The table below provides a summary of the project training and testing data sets. 
 
@@ -43,9 +40,6 @@ Based on a comparison of the RMSE score, the LSTM model is the best performing m
 * What is output?
 
 ## Data and Features
-* Source (&#x2714;)
-* Data Schema (&#x2714;)
-* Stats (counts) (&#x2714;)
 
 The reference for the data sets used in this project is Damage Propagation Modeling for Aircraft Engine Run-to-Failure Simulation published in the 1st International Conference on Prognostics and Health Management. The first use case for this data was to use expert knowledge, combined with the data sets to model damage propagation from which an overall health index can be derived. Thresholding on the health index can then be used to determine failure times.  For our purposes we take a data driven approach to directly predict the remaining useful life of the fleet engines.
 
@@ -92,7 +86,6 @@ The summary of the project training and testing data sets provides an overview o
 |FD004         |61249                   |41214             |
 
 ## Algorithm
-* Description or images of data flow graph (&#x2714;)
 
 ![Data flow diagram for LSTM model](figures/Dataflow.png "Data flow diagram for LSTM model")
 
@@ -108,8 +101,6 @@ An LSTM model was chosen as one potential model due their potential advantages o
 ![Many to one LSTM layer](figures/many_one.png "Many to one LSTM layer")
 
 ## Results
-* ROC/Lift charts, AUC, R^2, MAPE, MSE as appropriate
-* Performance graphs for parameters sweeps if applicable
 
 ![Plot of LSTM LOSS function across epochs for the FD003 data set](figures/Model_loss.png "Plot of LSTM LOSS function across epochs for the FD003 data set")
 
