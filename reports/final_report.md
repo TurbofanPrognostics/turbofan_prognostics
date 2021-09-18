@@ -2,6 +2,9 @@
 
 _Report describing the final model to be delivered - typically comprised of one or more of the models built during the life of the project_
 
+## Introduction
+Industrial equipment such as Turbofan Engines in aircrafts have very tight and costly maintenance schedules to ensure availability and reliability. It is estimated that 15-70% of total production costs originate from maintenance activities<sup>1</sup>. Companies are beginning to utilize large streams of sensor data for Prognostics and Predictive Maintenance. Prognostics is the monitoring of the health of a product and predicting its Remaining Useful Life (RUL). Health is defined as the deviation from ideal equipment vitals and conditions usually measured by sensors. Predictive Maintenance are the statistical and computational techniques utilized for detecting defects and failure. Savings from optimizing the use of equipment can lead to $30B of savings in the aviation sector<sup>2</sup>. The goal of this project was to utilize NASA's CMAPPS data set for building a service that can predict RUL for turbofan engines and also simulating how a model inference service could be utilized on-demand by other software systems in a production setting. Predicting RUL accurately has major industrial implications such as minimizing the number of unexpected breakdowns, maximizing uptime of aircrafts, reducing operational costs by performing only necessary maintenance, and maximizing production hours.
+
 ## Analytic Approach
 
 The expected value to be gained from this project lies in effective predictive maintenance of turbofan engines. To explain the analytical approach taken, we  first describe the experimental scenario, as outlined in the NASA's turbofan engine degradation simulation dataset (CMAPSS). The project leverages four (4) multivariate time series (see the Data Schema section for details). FD001 has a single fault mode (HPC Degradation) with 100 vector valued training examples and 100 vector valued test examples. FD002 has single fault mode (HPC Degradation) with 260 training examples and 259 training examples.  FD003 is a more complicated dataset with the possibility of two (2) fault modes (HPC Degradation and or Fan Degradation). For FD003, we had 100 vector valued training examples and 100 vector valued test set examples.  Similar to FD003, FD004 also had two fault modes (HPC Degradation and Fan Degradation) with 248 training examples and 249 test examples. The table below provides a summary of the project training and testing data sets. 
@@ -36,8 +39,34 @@ Based on a comparison of the RMSE score, the LSTM model is the best performing m
 ### System Architecture
 ![Solution Diagram](figures/turbofan_prognostics_system_design_final.png "System Design Diagram")
 
-* Simple solution architecture (Data sources, solution components, data flow)
-* What is output?
+Our system architecture for this project included **offline model training**, **a backend model inference service** and a **frontend simulation** of the model inference service.
+
+### Offline Training
+The **offline training** portion of our project was in a separate repository in our [Git Organziation](https://github.com/TurbofanPrognostics) called [`turbofan_prognostics`](https://github.com/TurbofanPrognostics/turbofan_prognostics). This repository holds a dockerized Jupyter server that can be run on any machine with all the dependencies installed for the models that were iterated on and saved in the repository. If a new library was necessary, it is as simple as adding that library in the `requirements.txt` file and just rebuilding the docker image. Instructions for building and running the dockerized Jupyter server are in the repository's `README.md`. Models and modeling pipelines that were ready to be deployed were save in binary format (pickle) in the `/models` directory. Having the Jupyter server dockerized made it easier to track which version of each library is utilized during training and deployment.
+
+### Model Inference Service
+The modeling service is built utilizing the FastAPI Python framework and can be found in the repository (`turbo_fast_app`)[https://github.com/TurbofanPrognostics/turbo_fast_app]. This service is also dockerized and instructions for building and running this modeling service in a docker container can be found in the README.md file in the repository. This modeling service functions as an on-demand prediction engine that can be utilized by other applications in a microservice oriented architecture. Any application that needs RUL predictions in near real-time can send a post API request to the modeling service with the time series data in the payload and the service will process the request and send back its RUL predictions in the response. FastAPI has a couple of advantages compared to other backend frameworks in Python including automatic schema validation of API requests utilizing the Pydantic library, automatic Swagger documentation where the endpoints are well defined and can be tested and its performance compares with the speed of services written in Go making it great for machine learning projects. FastAPI also has great documentation to get started making it great for newcomers to backend web development.
+
+**Swagger Page**
+![Swagger Page](figures/fastapi_swagger_page.png "Swagger Page")
+
+The model inference service has **6 endpoints** as shown above. 
+1. A `GET` request on the `/` endpoint prints out 'hello world' as quick indicator that the service is up and running
+2. A `POST` request on the `/test` endpoint is just for testing purposes only. It automatically loads a test JSON request directly from the repository and makes predictions on it
+3. A `GET` request on the `/models` endpoint will show a list of the deployed models that can be utilized for live inference
+4. A `POST` request on the `/batch_predict` endpoint will return RUL predictions on an entire batch of engines (multiple engines and their time series data)
+5. A `POST` request on `/stream_predict` will take in a single engine's time step data and return an RUL prediction for that specific time step
+6. A `POST` request on the `/select_model` with a model specified in the list of models returned from the `GET` on `/models` endpoint will load that specified model binary in the backend so that model will be utilized for inference on subsequent requests to `/stream_predict` and `/batch_predict`.
+
+### Streamlit Simulation
+![Streamlit Simulation](figures/streamlit.png "Streamlit")
+This project uses Streamlit to simulate the use of the model inference service. You can select a model for inference in the drop down on the right. Once that is selected, it utilizes the '/select_model' endpoint to actually load that model binary in the model inference service backend. When you hit `Start Simulation`, Streamlit loads training data and begins making requests to the model inference service and plots the predicted RUL at each time step. For the `Baseline Regression Model`, it iterates through each time step and makes a `POST` request to the `/stream_predict` endpoint and streamlit receives the RUL predictions and displays it on a line chart. As the simulation progresses, the predicted RUL and the empirical RUL are plotted on the line chart. The simulation shows the actual empirical RUL that the machine learning model needs to learn and it subsequently also displays the function that the model actually did learn from the training data by plotting the service's predict RULs. This simulation shows how the model inference service could be utilized for near real-time. The simulation actually adds a 0.05 second lag so that the points don't plot too fast for the display or else it seems like a static plot. 
+
+If you pick the `Time Series Model`, it actually utilizes the `/batch_predict` endpoint instead for its simulation. Since the `Time Series Model` has lagged variables, we would have needed to adjust the JSON schema if the similation were to utilize the `/stream_predict` endpoint. We decided not to utilize this approach for this `Time Series Model` and instead utilize the `/batch_predict` endpoint so that we are not coupling JSON schemas to the actual model that is being utilized. In an actual production setting, it may actually make sense to change the JSON schema to accept the parameters necessary for that model.
+
+
+### Deployment
+This project utilizes AWS Elastic Beanstalk for deployment for both the model inference service (FastAPI) and the Streamlit simulation application. Both docker images for the model inference service and Streamlit simulation application were on DockerHub for easier deployment with Elastic Beanstalk. We chose Elastic Beanstalk for its ease of use and scalability on AWS which is by far the most popular cloud. For instructions on how to deploy our applications on Elastic Beanstalk, refer to the README.md for both the [`turbo_fast_app`](https://github.com/TurbofanPrognostics/turbo_fast_app) repository and the [`turbofan-dashboard`](https://github.com/TurbofanPrognostics/turbofan-dashboard) repository.
 
 ## Data and Features
 
@@ -123,3 +152,10 @@ In terms of deciding on model performance, we rely on the root mean square error
 |                         |FD002       |28.22             |0.72    | 18                           |
 |                         |FD003       |18.34             |0.80    | 68                           |
 |                         |FD004       |27.37             |0.75    | 49                           |
+
+## Future Work
+A new CMAPPS data set was released with much larger amounts of data that could be utilized to further test the performance of our models as well as iterate and build new models. Our system did not include any production grade CI/CD pipeline. Deployments to AWS Elastic Beanstalk was done manually through commandline for each service so that is one area of future work that could be iterated on further. We also ran out of cycles to actually deploy the trained LSTM model to our model inference service which is another area we plan on developing.
+
+## References
+1. https://arxiv.org/abs/2002.08224
+2. https://arxiv.org/pdf/1709.06669.pdf
